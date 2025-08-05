@@ -13,10 +13,14 @@ Cada laboratório leva aproximadamente 20–30 minutos.
 **Passos**:
 
 1. **Criar um servidor**:
+    Use o comando a seguir para  criar seu servidor: ~/wlp/bin/server create myserver
    ```bash
-   /opt/liberty/bin/server create myserver
+   ~/wlp/bin$ ./server create meuApp
    ```
    Verifique a pasta criada em `~/wlp/usr/servers/myserver`.
+    ```bash
+   ~/wlp/bin$ ls ../usr/servers/meuApp/
+    ```
 
 2. **Adicionar features**:
 
@@ -34,14 +38,19 @@ Cada laboratório leva aproximadamente 20–30 minutos.
 
    Instale as features:
    ```bash
-   /opt/liberty/bin/installUtility install webProfile-10.0 mpHealth-4.0
+   ~/wlp/bin$ ./installUtility install adminCenter-1.0 restConnector-2.0 jakartaee-10.0 microProfile-7.0 webProfile-10.0 mpHealth-4.0
+
    ```
 
 3. **Iniciar o servidor**:
    ```bash
-   /opt/liberty/bin/server start myserver
+   ~/wlp/bin$ ./server start meuApp
    ```
    Verifique os logs em `wlp/usr/servers/myserver/logs/console.log`.
+    ```bash
+   ~/wlp/bin$ cat ../usr/servers/meuApp/logs/console.log
+
+   ```
 
 4. **Acessar o Admin Center**:
 
@@ -69,6 +78,7 @@ Cada laboratório leva aproximadamente 20–30 minutos.
    - Acesse: `https://localhost:9443/adminCenter` (login: admin / senhaSegura)
 
    - Exemplo de configuração completa:
+
      ```xml
      <server description="new server">
          <featureManager>
@@ -108,17 +118,22 @@ Cada laboratório leva aproximadamente 20–30 minutos.
 
 1. **Baixar a aplicação**:
    ```bash
-   wget https://github.com/gomesrocha/curso_liberty/raw/main/app/ROOT.war -O /opt/liberty/wlp/usr/servers/myserver/dropins/ROOT.war
+   ~/wlp$ cd usr/servers/meuApp/dropins/
+
    ```
 
 2. **Copiar o arquivo WAR para o servidor**:
    ```bash
-   cp ROOT.war /opt/liberty/wlp/usr/servers/myserver/dropins/
+
+   cp ROOT.war ~/wlp/usr/servers/myserver/dropins/ && wget https://github.com/gomesrocha/curso_liberty/raw/main/app/ROOT.war
+   
    ```
 
 3. **Reiniciar o servidor**:
    ```bash
-   /opt/liberty/bin/server stop myserver && /opt/liberty/bin/server start myserver
+
+   ~/wlp/bin/server stop myserver && ~/wlp/bin/server start myserver
+
    ```
 
 4. **Testar**:
