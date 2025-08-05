@@ -51,6 +51,36 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
    - Instale a feature: `bin/installUtility install adminCenter-1.0`.
    - Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
    - Acesse `https://localhost:9443/adminCenter` (login: admin/adminpwd).
+   - Abaixo um exemplo de configuração completa
+    ```xml
+    <server description="new server">
+    <featureManager>
+        <feature>adminCenter-1.0</feature>
+        <feature>restConnector-2.0</feature>
+        <feature>jakartaee-10.0</feature>
+        <feature>microProfile-7.0</feature>
+    </featureManager>
+
+    <basicRegistry id="basic" realm="BasicRealm">
+        <user name="admin" password="senhaSegura"/>
+    </basicRegistry>
+
+    <administrator-role>
+        <user>admin</user>
+    </administrator-role>
+
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443"
+                  host="*" />
+
+    <applicationManager autoExpand="true"/>
+
+    <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+</server>
+
+
+     ```
 
 **Tarefa**: Liste as features instaladas com `bin/productInfo featureInfo` e verifique o endpoint `/health` em `http://localhost:9080/health`.
 
