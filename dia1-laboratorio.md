@@ -46,7 +46,7 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
     <administrator-role>
         <user>admin</user>
     </administrator-role>
-    
+
      ```
    - Instale a feature: `bin/installUtility install adminCenter-1.0`.
    - Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
@@ -59,56 +59,18 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
 **Objetivo**: Deploy de uma aplicação WAR simples e teste de funcionalidade.
 
 **Passos**:
-1. **Criar uma Aplicação Simples**:
-   Crie um projeto Maven:
+1. **Baixe a aplicação*:
+   
    ```bash
-   mvn archetype:generate -DgroupId=com.example -DartifactId=simple-app -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
-   ```
-   Adicione ao `pom.xml`:
-   ```xml
-   <dependency>
-       <groupId>jakarta.servlet</groupId>
-       <artifactId>jakarta.servlet-api</artifactId>
-       <version>6.0.0</version>
-       <scope>provided</scope>
-   </dependency>
-   <plugin>
-       <groupId>io.openliberty.tools</groupId>
-       <artifactId>liberty-maven-plugin</artifactId>
-       <version>3.10</version>
-   </plugin>
-   ```
+   wget https://github.com/gomesrocha/curso_liberty/raw/main/app/ROOT.war -O /opt/liberty/wlp/usr/servers/myserver/dropins/ROOT.war
 
-2. **Criar um Servlet**:
-   Em `src/main/java/com/example/HelloServlet.java`:
-   ```java
-   package com.example;
-   import jakarta.servlet.annotation.WebServlet;
-   import jakarta.servlet.http.HttpServlet;
-   import jakarta.servlet.http.HttpServletRequest;
-   import jakarta.servlet.http.HttpServletResponse;
-   import java.io.IOException;
-
-   @WebServlet("/hello")
-   public class HelloServlet extends HttpServlet {
-       protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-           resp.getWriter().write("Hello from Liberty!");
-       }
-   }
-   ```
-
-3. **Build e Deploy**:
-   ```bash
-   cd simple-app
-   mvn package
-   cp target/simple-app.war /opt/liberty/wlp/usr/servers/myserver/dropins/
+   cp ROOT.war /opt/liberty/wlp/usr/servers/myserver/dropins/
    ```
    Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
 
 4. **Testar**:
-   Acesse `http://localhost:9080/simple-app/hello` e verifique a mensagem "Hello from Liberty!".
+   Acesse `http://localhost:9080/ROOT/api/hello/ping` e verifique a mensagem "Pong".
 
-**Tarefa**: Modifique o Servlet para retornar o nome do usuário via parâmetro (ex.: `/hello?name=Aluno`), e redeploy.
 
 ## Laboratório 3: Implementando MicroProfile Health Check
 
