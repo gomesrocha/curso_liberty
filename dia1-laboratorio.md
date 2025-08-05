@@ -38,6 +38,7 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
 
 4. **Acessar o Admin Center**:
    - Adicione ao `server.xml`:
+   
      ```xml
          <basicRegistry id="basic" realm="BasicRealm">
         <user name="admin" password="senhaSegura"/>
@@ -48,10 +49,12 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
     </administrator-role>
 
      ```
+
    - Instale a feature: `bin/installUtility install adminCenter-1.0`.
    - Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
    - Acesse `https://localhost:9443/adminCenter` (login: admin/adminpwd).
    - Abaixo um exemplo de configuração completa
+   
     ```xml
     <server description="new server">
     <featureManager>
