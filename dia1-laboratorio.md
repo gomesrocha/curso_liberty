@@ -1,125 +1,153 @@
 # Laboratórios Práticos: Aula 1 - Open Liberty e WAS Liberty
 
-Os laboratórios a seguir são projetados para reforçar os conceitos apresentados na aula, com foco em configuração, gerenciamento de features e deploy de aplicações. Pré-requisitos: JDK 17+, Maven 3.8+, Open Liberty instalado em `/opt/liberty` (ou use Docker: `docker pull icr.io/appcafe/open-liberty`). Cada laboratório leva ~20-30 minutos.
+Os laboratórios a seguir são projetados para reforçar os conceitos apresentados na aula, com foco em configuração, gerenciamento de features e deploy de aplicações.
+
+**Pré-requisitos**: JDK 17+, Maven 3.8+, Open Liberty instalado em `~/wlp` (ou use Docker: `docker pull icr.io/appcafe/open-liberty`).
+
+Cada laboratório leva aproximadamente 20–30 minutos.
 
 ## Laboratório 1: Configurando o Primeiro Servidor Liberty
 
 **Objetivo**: Criar e configurar um servidor Liberty, adicionar features e explorar o Admin Center.
 
 **Passos**:
-1. **Criar um Servidor**:
+
+1. **Criar um servidor**:
    ```bash
    /opt/liberty/bin/server create myserver
    ```
-   Verifique a pasta criada em `/opt/liberty/wlp/usr/servers/myserver`.
+   Verifique a pasta criada em `~/wlp/usr/servers/myserver`.
 
-2. **Adicionar Features**:
+2. **Adicionar features**:
+
    Edite `wlp/usr/servers/myserver/server.xml`:
    ```xml
    <featureManager>
-        <feature>adminCenter-1.0</feature>
-        <feature>restConnector-2.0</feature>
-        <feature>jakartaee-10.0</feature>
-        <feature>microProfile-7.0</feature>
+       <feature>adminCenter-1.0</feature>
+       <feature>restConnector-2.0</feature>
+       <feature>jakartaee-10.0</feature>
+       <feature>microProfile-7.0</feature>
        <feature>webProfile-10.0</feature>
        <feature>mpHealth-4.0</feature>
    </featureManager>
    ```
+
    Instale as features:
    ```bash
    /opt/liberty/bin/installUtility install webProfile-10.0 mpHealth-4.0
    ```
 
-3. **Iniciar o Servidor**:
+3. **Iniciar o servidor**:
    ```bash
    /opt/liberty/bin/server start myserver
    ```
    Verifique os logs em `wlp/usr/servers/myserver/logs/console.log`.
 
 4. **Acessar o Admin Center**:
+
    - Adicione ao `server.xml`:
-   
      ```xml
-         <basicRegistry id="basic" realm="BasicRealm">
-        <user name="admin" password="senhaSegura"/>
-    </basicRegistry>
+     <basicRegistry id="basic" realm="BasicRealm">
+         <user name="admin" password="senhaSegura"/>
+     </basicRegistry>
 
-    <administrator-role>
-        <user>admin</user>
-    </administrator-role>
-
+     <administrator-role>
+         <user>admin</user>
+     </administrator-role>
      ```
 
-   - Instale a feature: `bin/installUtility install adminCenter-1.0`.
-   - Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
-   - Acesse `https://localhost:9443/adminCenter` (login: admin/adminpwd).
-   - Abaixo um exemplo de configuração completa
-   
-    ```xml
-    <server description="new server">
-    <featureManager>
-        <feature>adminCenter-1.0</feature>
-        <feature>restConnector-2.0</feature>
-        <feature>jakartaee-10.0</feature>
-        <feature>microProfile-7.0</feature>
-    </featureManager>
+   - Instale a feature:
+     ```bash
+     /opt/liberty/bin/installUtility install adminCenter-1.0
+     ```
 
-    <basicRegistry id="basic" realm="BasicRealm">
-        <user name="admin" password="senhaSegura"/>
-    </basicRegistry>
+   - Reinicie o servidor:
+     ```bash
+     /opt/liberty/bin/server stop myserver && /opt/liberty/bin/server start myserver
+     ```
 
-    <administrator-role>
-        <user>admin</user>
-    </administrator-role>
+   - Acesse: `https://localhost:9443/adminCenter` (login: admin / senhaSegura)
 
-    <httpEndpoint id="defaultHttpEndpoint"
-                  httpPort="9080"
-                  httpsPort="9443"
-                  host="*" />
+   - Exemplo de configuração completa:
+     ```xml
+     <server description="new server">
+         <featureManager>
+             <feature>adminCenter-1.0</feature>
+             <feature>restConnector-2.0</feature>
+             <feature>jakartaee-10.0</feature>
+             <feature>microProfile-7.0</feature>
+         </featureManager>
 
-    <applicationManager autoExpand="true"/>
+         <basicRegistry id="basic" realm="BasicRealm">
+             <user name="admin" password="senhaSegura"/>
+         </basicRegistry>
 
-    <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
-</server>
+         <administrator-role>
+             <user>admin</user>
+         </administrator-role>
 
+         <httpEndpoint id="defaultHttpEndpoint"
+                       httpPort="9080"
+                       httpsPort="9443"
+                       host="*" />
 
+         <applicationManager autoExpand="true"/>
+         <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+     </server>
      ```
 
 **Tarefa**: Liste as features instaladas com `bin/productInfo featureInfo` e verifique o endpoint `/health` em `http://localhost:9080/health`.
 
+---
+
 ## Laboratório 2: Deploy de uma Aplicação Simples
 
-**Objetivo**: Deploy de uma aplicação WAR simples e teste de funcionalidade.
+**Objetivo**: Realizar o deploy de uma aplicação WAR simples e testar a funcionalidade.
 
 **Passos**:
-1. **Baixe a aplicação*:
-   
+
+1. **Baixar a aplicação**:
    ```bash
    wget https://github.com/gomesrocha/curso_liberty/raw/main/app/ROOT.war -O /opt/liberty/wlp/usr/servers/myserver/dropins/ROOT.war
+   ```
 
+2. **Copiar o arquivo WAR para o servidor**:
+   ```bash
    cp ROOT.war /opt/liberty/wlp/usr/servers/myserver/dropins/
    ```
-   Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
+
+3. **Reiniciar o servidor**:
+   ```bash
+   /opt/liberty/bin/server stop myserver && /opt/liberty/bin/server start myserver
+   ```
 
 4. **Testar**:
-   Acesse `http://localhost:9080/ROOT/api/hello/ping` e verifique a mensagem "Pong".
+   Acesse: `http://localhost:9080/ROOT/api/hello/ping` e verifique a resposta `"Pong"`.
 
+---
 
 ## Laboratório 3: Implementando MicroProfile Health Check
 
-**Objetivo**: Adicionar um health check com MicroProfile e testar integração com cloud-native.
+**Objetivo**: Adicionar um health check com MicroProfile e testar a integração com cloud-native.
 
 **Passos**:
+
 1. **Adicionar MicroProfile**:
+
    No `server.xml`:
    ```xml
    <featureManager>
        <feature>microProfile-6.1</feature>
    </featureManager>
    ```
-   Instale: `bin/installUtility install microProfile-6.1`.
+
+   Instale:
+   ```bash
+   /opt/liberty/bin/installUtility install microProfile-6.1
+   ```
 
 2. **Criar Health Check**:
+
    No projeto Maven, adicione a dependência:
    ```xml
    <dependency>
@@ -130,7 +158,8 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
        <scope>provided</scope>
    </dependency>
    ```
-   Crie `src/main/java/com/example/MyHealthCheck.java`:
+
+   Crie o arquivo `src/main/java/com/example/MyHealthCheck.java`:
    ```java
    package com.example;
    import org.eclipse.microprofile.health.HealthCheck;
@@ -151,14 +180,32 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
    mvn package
    cp target/simple-app.war /opt/liberty/wlp/usr/servers/myserver/dropins/
    ```
+
    Reinicie o servidor.
 
 4. **Testar**:
-   Acesse `http://localhost:9080/health`. Verifique o JSON retornado: `{"status":"UP","checks":[{"name":"MyService","status":"UP"}]}`.
+   Acesse `http://localhost:9080/health`. Verifique o JSON retornado:
+   ```json
+   {
+     "status": "UP",
+     "checks": [
+       {
+         "name": "MyService",
+         "status": "UP"
+       }
+     ]
+   }
+   ```
 
-**Tarefa**: Adicione um `@Readiness` check que verifica uma condição (ex.: conexão com banco de dados fictícia) e teste `/health/ready`.
+**Tarefa**: Adicione um `@Readiness` check que verifica uma condição (ex.: conexão fictícia com banco de dados) e teste o endpoint `/health/ready`.
+
+---
 
 ## Notas
-- **Ambiente**: Use um ambiente local ou VM com Open Liberty e Maven. Alternativamente, use Docker para simplificar.
-- **Validação**: Após cada laboratório, peça aos alunos para compartilhar resultados no Admin Center ou via endpoints.
-- **Duração**: ~1 hora para Laboratórios 1 e 2, ~45 minutos para Laboratório 3, com 15 minutos para discussão.
+
+- **Ambiente**: Utilize um ambiente local ou VM com Open Liberty e Maven. Alternativamente, utilize Docker para facilitar.
+- **Validação**: Após cada laboratório, peça aos alunos que compartilhem os resultados via Admin Center ou endpoints.
+- **Duração estimada**:
+  - Laboratórios 1 e 2: ~1 hora
+  - Laboratório 3: ~45 minutos
+  - Discussão: ~15 minutos
