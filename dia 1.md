@@ -62,7 +62,44 @@ A arquitetura do WAS Liberty é baseada em um **kernel leve** e **modular** (OSG
   - **Extension Layer**: Integração com Kubernetes (probes, metrics para Prometheus).
 - **Escalabilidade**: Clustering nativo, auto-scaling em Kubernetes, InstantOn para startup sub-segundo.
 
-**Diagrama Sugerido**: Kernel no centro, features como blocos plugáveis.
+
+## 5. Introdução ao Jakarta EE
+### O que é o Jakarta EE?
+Jakarta EE é a evolução do Java EE (Java Platform, Enterprise Edition), agora mantido pela Eclipse Foundation.
+
+É uma plataforma padrão para o desenvolvimento de aplicações corporativas Java, portáveis e escaláveis, utilizando especificações maduras e amplamente adotadas.
+
+
+| Etapa	| Evento                                     | 
+| Java EE	| Criado pela Sun Microsystems, depois mantido pela Oracle.| 
+| 2017	| Oracle doa Java EE à Eclipse Foundation.| 
+| 2018	| Renomeado para Jakarta EE.| 
+| 2020+	| Jakarta EE continua evoluindo sob a Eclipse.| 
+
+**QUal o objetivo da plataforma?**
+
+- Criar sistemas robustos, seguros e escaláveis.
+
+- Fornecer APIs padronizadas e estáveis.
+
+- Garantir portabilidade entre servidores de aplicação.
+
+- Suporte completo a aplicações corporativas monolíticas ou distribuídas.
+
+Principais APIs e Especificações
+
+| API	| Finalidade | 
+| JAX-RS	| APIs RESTful| 
+| JPA	| Persistência ORM com anotações| 
+| CDI	| Injeção de dependência e ciclo de vida| 
+| EJB	| Transações, timers e lógica de negócio| 
+| Servlet	| Manipulação HTTP de baixo nível| 
+| Jakarta Security	| Segurança baseada em roles e contextos| 
+| Jakarta Batch	| Processamento em lote| 
+| Jakarta JMS	| Comunicação assíncrona via mensagens| 
+| Jakarta Faces (JSF)	| UI baseada em componentes para web| 
+| Bean Validation	| Validação declarativa com anotações| 
+
 
 ## 5. Comandos Iniciais para Configurar o Servidor
 
