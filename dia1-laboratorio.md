@@ -17,6 +17,10 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
    Edite `wlp/usr/servers/myserver/server.xml`:
    ```xml
    <featureManager>
+        <feature>adminCenter-1.0</feature>
+        <feature>restConnector-2.0</feature>
+        <feature>jakartaee-10.0</feature>
+        <feature>microProfile-7.0</feature>
        <feature>webProfile-10.0</feature>
        <feature>mpHealth-4.0</feature>
    </featureManager>
@@ -35,14 +39,14 @@ Os laboratórios a seguir são projetados para reforçar os conceitos apresentad
 4. **Acessar o Admin Center**:
    - Adicione ao `server.xml`:
      ```xml
-     <featureManager>
-         <feature>adminCenter-1.0</feature>
-     </featureManager>
-     <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="9080" httpsPort="9443"/>
-     <administrator-role>
-         <user>admin</user>
-     </administrator-role>
-     <quickStartSecurity userName="admin" userPassword="adminpwd"/>
+         <basicRegistry id="basic" realm="BasicRealm">
+        <user name="admin" password="senhaSegura"/>
+    </basicRegistry>
+
+    <administrator-role>
+        <user>admin</user>
+    </administrator-role>
+    
      ```
    - Instale a feature: `bin/installUtility install adminCenter-1.0`.
    - Reinicie o servidor: `bin/server stop myserver && bin/server start myserver`.
