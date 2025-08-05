@@ -65,8 +65,6 @@ A **Jakarta EE** é a evolução da J2EE, agora gerenciada pela Eclipse Foundati
 
 **No Liberty**: Suporta Jakarta EE 10+ e MicroProfile, ideal para monolíticos (full EE) e microsserviços (subsets leves).
 
-**Diagrama Sugerido**: Comparar J2EE (camadas fixas: cliente, web, business, EIS) vs. Jakarta EE (modular, cloud-ready).
-
 ## 3. Introdução ao Jakarta EE
 
 ### O que é o Jakarta EE?
