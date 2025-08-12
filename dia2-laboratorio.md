@@ -64,6 +64,42 @@ Este laboratório configura um cluster tradicional no Open Liberty usando um con
 
 ## Passo 1: Criar e Configurar o Controlador "meuControlador"
 - Crie: `./server create meuControlador`.
+
+- Atualize `server.xml` em `../usr/servers/meuControlador/server.xml`:
+  ```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+    <server description="new server">
+
+        <!-- Enable features -->
+        <featureManager>
+            <feature>collectiveController-1.0</feature>
+            <feature>adminCenter-1.0</feature>
+            <feature>ssl-1.0</feature>
+        </featureManager>
+
+        <basicRegistry id="basic" realm="BasicRealm">
+            <user name="admin" password="senhaSegura"/>
+        </basicRegistry>
+        <administrator-role>
+            <user>admin</user>
+        </administrator-role>
+
+
+        <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+        <httpEndpoint id="defaultHttpEndpoint"
+                    httpPort="20080"
+                    httpsPort="20443" />
+
+        <!-- Automatically expand WAR files and EAR files -->
+        <applicationManager autoExpand="true"/>
+        <applicationMonitor updateTrigger="mbean"/>
+
+
+        <!-- Default SSL configuration enables trust for default certificates from the Java runtime --> 
+        <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+    </server>
+
+  ```
 - Gere collective: `./collective create meuControlador --keystorePassword=senhaSegura --createConfigFile=../usr/servers/meuControlador/collective-include.xml --hostName=localhost`.
 - Atualize `server.xml` em `../usr/servers/meuControlador/server.xml`:
   ```xml
@@ -73,7 +109,19 @@ Este laboratório configura um cluster tradicional no Open Liberty usando um con
         <!-- Enable features -->
         <featureManager>
             <feature>collectiveController-1.0</feature>
+            <feature>adminCenter-1.0</feature>
+            <feature>ssl-1.0</feature>
         </featureManager>
+        
+        <include location="${server.config.dir}/collective-include.xml"/>
+
+        <basicRegistry id="basic" realm="BasicRealm">
+            <user name="admin" password="senhaSegura"/>
+        </basicRegistry>
+        <administrator-role>
+            <user>admin</user>
+        </administrator-role>
+
 
         <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
         <httpEndpoint id="defaultHttpEndpoint"
@@ -82,6 +130,8 @@ Este laboratório configura um cluster tradicional no Open Liberty usando um con
 
         <!-- Automatically expand WAR files and EAR files -->
         <applicationManager autoExpand="true"/>
+        <applicationMonitor updateTrigger="mbean"/>
+
 
         <!-- Default SSL configuration enables trust for default certificates from the Java runtime --> 
         <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
