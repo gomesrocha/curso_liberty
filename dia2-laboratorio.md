@@ -100,6 +100,7 @@ Este laboratório configura um cluster tradicional no Open Liberty usando um con
     </server>
 
   ```
+
 - Gere collective: `./collective create meuControlador --keystorePassword=senhaSegura --createConfigFile=../usr/servers/meuControlador/collective-include.xml --hostName=localhost`.
 - Atualize `server.xml` em `../usr/servers/meuControlador/server.xml`:
   ```xml
@@ -112,7 +113,7 @@ Este laboratório configura um cluster tradicional no Open Liberty usando um con
             <feature>adminCenter-1.0</feature>
             <feature>ssl-1.0</feature>
         </featureManager>
-        
+
         <include location="${server.config.dir}/collective-include.xml"/>
 
         <basicRegistry id="basic" realm="BasicRealm">
