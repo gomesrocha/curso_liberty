@@ -57,13 +57,6 @@ Use o conteúdo corrigido abaixo (baseado no seu XML, com tags fechadas corretam
 </server>
 ```
 
-- **Explicações das Mudanças**:
-  - Fechamos a tag `<ssl>` corretamente (adicionando `/` no final).
-  - Completamos os atributos `password` nos `<keyStore>`, usando a senha codificada que você gerou (`{xor}LDoxNz4MOjgqLT4=`).
-  - Removemos acentos em comentários para evitar problemas de encoding (opcional, mas previne erros).
-  - A porta HTTPS é 9447, como especificado.
-
-Salve o arquivo (Ctrl+O, Enter, Ctrl+X).
 
 ## Passo 3: Gerar o Certificado Auto-Assinado
 Execute o comando para criar o keystore com o certificado:
