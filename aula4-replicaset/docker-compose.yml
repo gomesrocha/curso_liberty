@@ -1,0 +1,75 @@
+version: '3.8'
+
+networks:
+  liberty-cluster:
+    driver: bridge
+
+services:
+  controlador:
+    container_name: controlador
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_XML: controller/server.xml
+    ports:
+      - "9080:9080" # HTTP port for controller
+      - "9443:9443" # HTTPS port for controller
+    networks:
+      - liberty-cluster
+
+  membro1-replica1:
+    container_name: membro1-replica1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_XML: replica1/membro1-replica1/server.xml
+    ports:
+      - "9081:9080" # Map to host port 9081
+    networks:
+      - liberty-cluster
+    depends_on:
+      - controlador
+
+  membro2-replica1:
+    container_name: membro2-replica1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_XML: replica1/membro2-replica1/server.xml
+    ports:
+      - "9082:9080" # Map to host port 9082
+    networks:
+      - liberty-cluster
+    depends_on:
+      - controlador
+
+  membro1-replica2:
+    container_name: membro1-replica2
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_XML: replica2/membro1-replica2/server.xml
+    ports:
+      - "9083:9080" # Map to host port 9083
+    networks:
+      - liberty-cluster
+    depends_on:
+      - controlador
+
+  membro2-replica2:
+    container_name: membro2-replica2
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_XML: replica2/membro2-replica2/server.xml
+    ports:
+      - "9084:9080" # Map to host port 9084
+    networks:
+      - liberty-cluster
+    depends_on:
+      - controlador
