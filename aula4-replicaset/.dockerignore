@@ -1,0 +1,15 @@
+# Ignore git files
+.git
+.gitignore
+
+# Ignore IDE files
+.idea
+*.iml
+
+# Ignore build outputs and logs
+build/
+target/
+*.log
+
+# Ignore the docker-compose file itself from the context
+docker-compose.yml
