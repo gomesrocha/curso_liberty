@@ -1,0 +1,20 @@
+<server description="Collective Controller">
+    <featureManager>
+        <feature>clusterController-1.0</feature>
+        <feature>restConnector-2.0</feature>
+    </featureManager>
+
+    <httpEndpoint httpPort="9080" httpsPort="9443" id="defaultHttpEndpoint" host="*" />
+
+    <!-- Collective controller configuration -->
+    <collectiveController user="admin" password="adminPassword" />
+
+    <!-- Default SSL configuration -->
+    <ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" />
+    <keyStore id="defaultKeyStore" password="keyStorePassword" />
+
+    <!-- This allows remote file access for members -->
+    <remoteFileAccess>
+        <writeDir>${server.config.dir}</writeDir>
+    </remoteFileAccess>
+</server>
