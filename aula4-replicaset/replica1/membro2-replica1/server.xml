@@ -1,0 +1,21 @@
+<server description="Collective Member - membro2-replica1">
+    <featureManager>
+        <feature>clusterMember-1.0</feature>
+    </featureManager>
+
+    <httpEndpoint httpPort="9080" httpsPort="9443" id="defaultHttpEndpoint" host="*" />
+
+    <!-- Collective member configuration -->
+    <collectiveMember
+        replicaSetName="Replica1"
+        hostName="membro2-replica1"
+        serverUser="admin"
+        serverPassword="adminPassword"
+        controllerUser="admin"
+        controllerPassword="adminPassword"
+        controllerUrl="https://controlador:9443" />
+
+    <!-- Default SSL configuration -->
+    <ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" />
+    <keyStore id="defaultKeyStore" password="keyStorePassword" />
+</server>
