@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  controlador:
+    build: .
+    container_name: Controlador
+    environment:
+      - ROLE=controller
+      - NAME=Controlador
+    ports:
+      - "9080:9080"
+      - "9443:9443"
+    networks:
+      - liberty-net
+
+  replica1:
+    build: .
+    container_name: Replica1
+    environment:
+      - ROLE=replica
+      - NAME=Replica1
+      - CONTROLLER_HOST=controlador
+    ports:
+      - "9081:9080"
+      - "9444:9443"
+    depends_on:
+      - controlador
+    networks:
+      - liberty-net
+
+  replica2:
+    build: .
+    container_name: Replica2
+    environment:
+      - ROLE=replica
+      - NAME=Replica2
+      - CONTROLLER_HOST=controlador
+    ports:
+      - "9082:9080"
+      - "9445:9443"
+    depends_on:
+      - controlador
+    networks:
+      - liberty-net
+
+  membro1:
+    build: .
+    container_name: Membro1
+    environment:
+      - ROLE=member
+      - NAME=Membro1
+      - CONTROLLER_HOST=controlador
+    ports:
+      - "9083:9080"
+      - "9446:9443"
+    depends_on:
+      - controlador
+    networks:
+      - liberty-net
+
+  membro2:
+    build: .
+    container_name: Membro2
+    environment:
+      - ROLE=member
+      - NAME=Membro2
+      - CONTROLLER_HOST=controlador
+    ports:
+      - "9084:9080"
+      - "9447:9443"
+    depends_on:
+      - controlador
+    networks:
+      - liberty-net
+
+networks:
+  liberty-net:
