@@ -10,7 +10,7 @@ ENV SERVER_CONFIG_DIR ${WLP_USER_DIR}/servers/${SERVER_NAME}
 ENV LOG_DIR /logs
 
 # Create directories and set permissions
-RUN mkdir -p ${WLP_USER_DIR} ${LOG_DIR} \
+RUN mkdir -p ${LOG_DIR} \
     && chmod -R 777 ${LOG_DIR}
 
 # Copy the Liberty installer JAR and install Liberty
