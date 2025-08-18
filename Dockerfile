@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/openjdk-17
+FROM ibm-semeru-runtimes:open-11-jre
 
 COPY --chown=185:0 wlp-nd-all-25.0.0.5.jar /tmp/
 
