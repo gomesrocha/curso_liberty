@@ -135,3 +135,45 @@ Arquivo verifica_servidor.yml
 
 Para executar o playbook, faça:
 ansible-playbook -i host verifica_servidor.yml
+
+
+
+Agora vamos criar um playbook para fazer teste no nosso servidor.
+
+Crie um arquivo novo playbook_teste_liberty.yml 
+```xml
+- name: Teste do  Liberty
+  hosts: all
+  vars:
+    liberty_log_path: "/home/liberty-base00/wlp/usr/servers/minhaAplicacaoCertificada/logs/messages.log"  # Variável para fácil mudança
+
+  tasks:
+    - name: Verificar erros de log
+      command: grep "ERROR" {{ liberty_log_path }}
+      register: log_errors
+      failed_when: log_errors.rc > 1  # Ignora rc=1 (nenhum erro), falha só se erro real
+      changed_when: false  # Não marca como changed
+
+    - name: Debug Erros Encontrados
+      debug:
+        msg: "Erros encontrados: {{ log_errors.stdout | default('Nenhum erro encontrado') }}"  # Corrigido: fechamento de aspas e filtro
+
+    - name: Monitorar Logs se Erros Encontrados
+      command: tail -f {{ liberty_log_path }}
+      when: log_errors.rc == 0  # Só se encontrou erros (rc=0 para grep com match)
+      async: 60  # Roda assincrono por 60s para monitoramento
+      poll: 0    # Não espera fim (útil para tail)
+
+    - name: Verificar porta 9447
+      command: netstat -an | grep 9447
+      register: port_check
+      changed_when: false
+
+    - name: Reiniciar se porta não estiver sendo listada
+      command: /home/liberty-base00/wlp/bin/server start minhaAplicacaoCertificada --clean
+      when: "'LISTEN' not in port_check.stdout"
+
+
+```
+E execute
+ansible-playbook -i hosts playbook_teste_liberty.yml 
