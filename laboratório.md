@@ -272,3 +272,6 @@ Crie um arquivo verificar_renovar_certificado.yml com o seguinte conteúdo
 Depois basta executar
 
 ansible-playbook -i host verificar_renovar_certificado.yml -e "server_name=minhaAplicacaoCertificada" -e "keystore_password=senhaSegura"
+
+Onde minhaAplicacaoCertificada é o nome da aplicação que quero validar o certificado e;
+senhaSegura é a senha do keystore
