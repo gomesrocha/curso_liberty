@@ -1,3 +1,9 @@
+# Laboratório de automação
+
+Criar o arquivo .sh e tornar ele executável com chmod +x, exemplo
+arquivo verificaporta.sh
+chmod +x verificaporta.sh
+
 Passo 1:
 Verificando porta com o bash
 
