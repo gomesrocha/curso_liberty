@@ -23,8 +23,8 @@ netstat -an |grep $PORT && echo "Porta: $PORT escultando" || echo "Porta: $PORT 
 
   ```
 
-Passo 2: 
-Verificando servidor com o Bash
+Passo 3 
+Verificando certificado com o Bash
   ```bash
 #!/bin/bash
 SERVER_NAME=$1
