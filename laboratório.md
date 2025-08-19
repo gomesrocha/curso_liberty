@@ -179,3 +179,96 @@ Crie um arquivo novo playbook_teste_liberty.yml
 ```
 E execute
 ansible-playbook -i hosts playbook_teste_liberty.yml 
+
+Verificando e renovando certificado com o Ansible
+
+Crie um arquivo verificar_renovar_certificado.yml com o seguinte conteúdo
+
+``` 
+- name: Verificar e Renovar Certificado no Open Liberty
+  hosts: all
+  vars:
+    liberty_path: "/home/liberty-base00/wlp"
+    server_name: "{{ server_name | default('minhaAplicacaoCertificada') }}"  # Nome do servidor
+    keystore_password: "{{ keystore_password | default('senhaSegura') }}"    # Senha do keystore
+    keystore_file: "{{ liberty_path }}/usr/servers/{{ server_name }}/resources/security/key.p12"  # Caminho do keystore
+    days_to_expire: 1
+
+  tasks:
+    - name: Verificar se Keystore Existe
+      stat:
+        path: "{{ keystore_file }}"
+      register: keystore_stat
+      failed_when: not keystore_stat.stat.exists  # Falha se keystore ausente
+
+    - name: Extrair Data de Expiração do Certificado
+      command: keytool -list -v -keystore {{ keystore_file }} -storepass {{ keystore_password }}
+      register: keytool_output
+      changed_when: false
+
+    - name: Parsear Data de Expiração (String Completa)
+      set_fact:
+        expiration_str: "{{ keytool_output.stdout | regex_search('until: (.*)', '\\1') | first | trim }}"
+      when: "'until:' in keytool_output.stdout"
+
+    - name: Converter Data de Expiração para Timestamp Unix
+      command: date -d "{{ expiration_str }}" +%s
+      register: expiration_timestamp
+      changed_when: false
+      when: expiration_str is defined
+
+    - name: Obter Timestamp Atual + {{ days_to_expire }} Dia
+      command: date -d "+{{ days_to_expire }} days" +%s
+      register: current_timestamp_plus_one
+      changed_when: false
+
+    - name: Verificar se Certificado Expirou ou Expira em Breve
+      set_fact:
+        needs_renewal: true
+      when: expiration_timestamp.stdout | int <= current_timestamp_plus_one.stdout | int
+
+    - name: Debug Status do Certificado
+      debug:
+        msg: "Certificado expira em {{ expiration_str | default('Data não encontrada') }}. Renovação necessária: {{ needs_renewal | default(false) }}"
+
+    - name: Backup do keystore
+      copy:
+        src: "{{ keystore_file }}"
+        dest: "{{ keystore_file }}.old"
+      when: needs_renewal | default(false)
+
+    - name: Remover keystore expirada
+      file:
+        path: "{{ keystore_file }}"
+        state: absent
+      when: needs_renewal | default(false)
+
+    - name: Renovar Certificado se Necessário
+      command: "{{ liberty_path }}/bin/securityUtility createSSLCertificate --server={{ server_name }} --password={{ keystore_password }} --validity=365 --subject=CN=localhost,OU={{ server_name }},O=example,C=BR"
+      when: needs_renewal | default(false)
+
+    - name: Parar Servidor Após Renovação
+      command: "{{ liberty_path }}/bin/server stop {{ server_name }}"
+      when: needs_renewal | default(false)
+      ignore_errors: yes
+
+    - name: Iniciar Servidor Após Renovação
+      command: "{{ liberty_path }}/bin/server start {{ server_name }} --clean"
+      when: needs_renewal | default(false)
+      ignore_errors: yes
+
+    - name: Verificar Status Final do Servidor
+      command: "{{ liberty_path }}/bin/server status {{ server_name }}"
+      register: server_status
+      ignore_errors: yes
+
+    - name: Debug Status Final
+      debug:
+        msg: "Status do Servidor: {{ server_status.stdout | default('Servidor não iniciado') }}"
+
+
+```
+
+Depois basta executar
+
+ansible-playbook -i host verificar_renovar_certificado.yml -e "server_name=minhaAplicacaoCertificada" -e "keystore_password=senhaSegura"
