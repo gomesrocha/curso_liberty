@@ -94,8 +94,10 @@ ansible --version
 
 Crieo arquivo host (pode ser outro nome) que vai conter as máquinas, neste caso apenas uma, que vamos automatizar com o seguinte conteúdo:
 
+```
 [local]
 localhost ansible_connection=local
+```
 
 Para testar o ansible, faça:
 
