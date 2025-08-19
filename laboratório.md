@@ -312,7 +312,6 @@ agora vamos criar o playbook new_controller.yml
 ``` 
 - name: Criar e Configurar Controlador no Open Liberty
   hosts: local
-  become: yes
   vars:
     liberty_path: "/home/liberty-base00/wlp"
     keystore_password: "{{ keystore_password | default('senhaSegura') }}"
