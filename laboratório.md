@@ -275,3 +275,100 @@ ansible-playbook -i host verificar_renovar_certificado.yml -e "server_name=minha
 
 Onde minhaAplicacaoCertificada é o nome da aplicação que quero validar o certificado e;
 senhaSegura é a senha do keystore
+
+
+### Criando um novo controlador com ansible
+
+Primeiro, vamos criar o template para ser usado pelo ansible com o nome controller_server.xml.j2, o j2 indica que é um arquito de template do jinja2, tudo o que está entre {{ }} é uma variável que será substituída durante a execução.
+
+``` 
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Controlador">
+    <featureManager>
+        <feature>collectiveController-1.0</feature>
+        <feature>ssl-1.0</feature>
+    </featureManager>
+
+    <include location="${server.config.dir}/collective-include.xml"/>
+
+    <basicRegistry id="basic" realm="BasicRealm">
+        <user name="admin" password="senhaSegura"/>
+    </basicRegistry>
+    <administrator-role>
+        <user>admin</user>
+    </administrator-role>
+
+    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="{{ http_port_var }}" httpsPort="{{ https_port_var }}"/>
+
+    <applicationMonitor updateTrigger="mbean"/>
+    <applicationManager autoExpand="true"/>
+</server>
+
+
+```
+
+agora vamos criar o playbook new_controller.yml
+
+``` 
+- name: Criar e Configurar Controlador no Open Liberty
+  hosts: local
+  become: yes
+  vars:
+    liberty_path: "/home/liberty-base00/wlp"
+    keystore_password: "{{ keystore_password | default('senhaSegura') }}"
+    controller_name: "{{ controller_name | default('meuControlador') }}" # Nome do controlador
+    controller_http_port: "{{ controller_http_port | default('9080') }}" # Porta HTTP do controlador
+    controller_https_port: "{{ controller_https_port | default('9443') }}" # Porta HTTPS do controlador
+
+  tasks:
+    - name: Codificar Senha
+      command: "{{ liberty_path }}/bin/securityUtility encode {{ keystore_password }}"
+      register: encoded_password
+
+    - name: Verificar e Criar Controlador
+      stat:
+        path: "{{ liberty_path }}/usr/servers/{{ controller_name }}"
+      register: controller_dir
+
+    - name: Criar Controlador se não Existir
+      command: "{{ liberty_path }}/bin/server create {{ controller_name }}"
+      when: not controller_dir.stat.exists
+
+    - name: Configurar Collective no Controlador
+      command: "{{ liberty_path }}/bin/collective create {{ controller_name }} --keystorePassword={{ keystore_password }} --createConfigFile={{ liberty_path }}/usr/servers/{{ controller_name }}/collective-include.xml --hostName=localhost"
+
+    - name: Configurar server.xml do Controlador
+      template:
+        src: controller_server.xml.j2 # Template para controlador (crie com o XML abaixo)
+        dest: "{{ liberty_path }}/usr/servers/{{ controller_name }}/server.xml"
+      vars:
+        encoded_pass: "{{ encoded_password.stdout }}"
+        http_port_var: "{{ controller_http_port }}"
+        https_port_var: "{{ controller_https_port }}"
+
+    - name: Iniciar Controlador
+      command: "{{ liberty_path }}/bin/server start {{ controller_name }} --clean"
+
+    - name: Liberar Portas do Controlador no Firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - "{{ controller_http_port }}"
+        - "{{ controller_https_port }}"
+
+    - name: Verificar Status do Controlador
+      command: "{{ liberty_path }}/bin/server status {{ controller_name }}"
+      register: controller_status
+      ignore_errors: yes
+
+    - debug:
+        msg: "Status do Controlador: {{ controller_status.stdout }}"
+
+
+``` 
+
+Para executar faça:
+
+ansible-playbook -i hosts new_controller.yml -e "keystore_password=senhaSegura" -e "controller_name=meuControl" -e "controller_http_port=9085" -e "controller_https_port=9048" -vvv
