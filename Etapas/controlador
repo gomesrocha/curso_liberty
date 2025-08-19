@@ -1,0 +1,73 @@
+1 configuração controlador (server.xml)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Controlador primário">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>collectiveController-1.0</feature>
+        <feature>adminCenter-1.0</feature>
+        <feature>restConnector-2.0</feature>
+    </featureManager>
+   <variable name="defaultHostName" value="liberty-base00" />
+    <quickStartSecurity userName="admin" userPassword="adminpwd"/>
+
+    <collectiveController replicaPort="10043" replicaSet="127.0.0.1:10043, 127.0.0.1:10044" isInitialReplicaSet="true" />
+
+    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+    <httpEndpoint id="defaultHttpEndpoint"
+                  host="*"
+                  httpPort="9080"
+                  httpsPort="9443" />
+    <include location="include.xml"/>
+    <!-- Automatically expand WAR files and EAR files -->
+    <applicationManager autoExpand="true"/>
+    <remoteFileAccess>
+        <writeDir>${server.config.dir}</writeDir>
+    </remoteFileAccess>
+
+</server>
+
+Depois executar:
+
+./collective create nome_controlador --keystorePassword=suaSenhaSegura --hostName=host1.example.com --createConfigFile=../usr/servers/nome_controlador/include.xml
+
+E iniciar o controlador
+./server start primaryController
+
+
+Criar replica
+
+./server create replica1
+adicionar no server.xml do replica 1 as configurações
+
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Replica do Controlador 1">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>collectiveController-1.0</feature>
+        <feature>adminCenter-1.0</feature>
+        <feature>restConnector-2.0</feature>
+    </featureManager>
+
+
+    <include location="include.xml" />
+
+    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+    <httpEndpoint id="defaultHttpEndpoint"
+                  host="*"
+                  httpPort="-1"
+                  httpsPort="9445" />
+
+    <!-- Automatically expand WAR files and EAR files -->
+    <applicationMonitor updateTrigger="mbean"/>
+    <applicationManager autoExpand="true"/>
+
+</server>
+~                   
+Executar o comando replicate
+
+./collective replicate replica1 --host=host1.example.com --port=9443 --user=admin --password=suaSenhaAdmin --keystorePassword=suaSenhaSegura --createConfigFile=../usr/servers/replica1/include.xml
+
+adicionar no server.xml do replica 1 as configurações
