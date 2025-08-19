@@ -71,3 +71,67 @@ openssl s_client -connect localhost:$PORT
 
 
   ```
+
+# Ansible
+
+Ansible é uma ferramenta poderosa para automação de tarefas em servidores, como configuração, deployment e gerenciamento. Ele é tipicamente instalado em uma máquina de controle (control node), que pode ser o seu computador local ou outro servidor, para gerenciar tarefas remotamente via SSH em outros servidores (managed nodes). Os managed nodes não precisam do Ansible instalado, apenas Python e acesso SSH.
+
+## Preparando o ambiente
+
+- pré-requisito: python 3
+
+Instalação:
+
+```
+sudo apt install ansible
+
+ou
+
+python3 -m pip install --user ansible
+
+ansible --version
+``` 
+
+Crieo arquivo host (pode ser outro nome) que vai conter as máquinas, neste caso apenas uma, que vamos automatizar com o seguinte conteúdo:
+
+[local]
+localhost ansible_connection=local
+
+Para testar o ansible, faça:
+
+ansible -i host all -m ping
+
+
+Agora vamos criar o playbook de verificação do servidor, neste caso, o servidor chama-se minhaAplicacaoCertificada, caso seja outro nome, basta substituir:
+
+ 
+
+
+Arquivo verifica_servidor.yml
+```xml
+
+- name: Teste de Setup Basico no Liberty
+  hosts: local  # Grupo do hosts file
+  become: yes   # Usa sudo
+  tasks:
+    - name: Atualizar pacotes
+      apt:
+        update_cache: yes
+
+    - name: Instalar Java (se nao tiver)
+      apt:
+        name: openjdk-11-jdk
+        state: present
+
+    - name: Verificar se Liberty esta rodando
+      command: /home/liberty-base00/wlp/bin/server status minhaAplicacaoCertificada
+      register: liberty_status
+      ignore_errors: yes
+
+    - debug:
+        msg: "Status do Liberty: {{ liberty_status.stdout }}"
+
+```
+
+Para executar o playbook, faça:
+ansible-playbook -i host verifica_servidor.yml
